@@ -1,0 +1,18 @@
+# Environments
+venv/
+env/
+node_modules/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# OS files
+.DS_Store
+
+# Sensitive data
+.env
+
+# Model weights (since you are pulling from Hugging Face)
+*.bin
+*.pth

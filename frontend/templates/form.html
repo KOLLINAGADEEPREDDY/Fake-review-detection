@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Sign Up | Log In</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+  <body>
+    <div class="wrapper">
+       <div class="title-text">
+          <div class="title login">Login</div>
+          <div class="title signup">Sign Up</div>
+       </div>
+       <div class="form-container">
+          <div class="slide-controls">
+             <input type="radio" name="slide" id="login" checked>
+             <input type="radio" name="slide" id="signup">
+             <label for="login" class="slide login">Login</label>
+             <label for="signup" class="slide signup">SignUp</label>
+             <div class="slider-tab"></div>
+          </div>
+          <div class="form-inner">
+             <form id="loginForm" class="login">
+                <div class="field">
+                   <input type="email" name="email" placeholder="Email Address" required>
+                </div>
+                <div class="field">
+                   <input type="password" name="password" placeholder="Password" required>
+                </div>
+                <div class="field btn">
+                   <div class="btn-layer"></div>
+                   <input type="submit" value="Login">
+                </div>
+                <div class="signup-link">
+                   Don't have an account? <a href="#">Create a new account</a>
+                </div>
+             </form>
+             <div id="loginMessage"></div>
+
+             <form id="signupForm" class="signup">
+                <div class="field">
+                   <input type="email" name="email" placeholder="Email Address" required>
+                </div>
+                <div class="field">
+                   <input type="password" name="password" placeholder="Password" required>
+                </div>
+                <div class="field">
+                   <input type="password" name="confirmPassword" placeholder="Confirm Password" required>
+                </div>
+                <div class="field btn">
+                   <div class="btn-layer"></div>
+                   <input type="submit" value="SignUp">
+                </div>
+             </form>
+          </div>
+       </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='style.js') }}"></script>
+    <script>
+      // Toggle logic for Login/Signup
+      document.getElementById("login").addEventListener("click", () => {
+        document.querySelector(".form-inner .login").style.display = "block";
+        document.querySelector(".form-inner .signup").style.display = "none";
+      });
+
+      document.getElementById("signup").addEventListener("click", () => {
+        document.querySelector(".form-inner .signup").style.display = "block";
+        document.querySelector(".form-inner .login").style.display = "none";
+      });
+
+      // Signup submission
+      document.getElementById("signupForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const email = document.querySelector('#signupForm input[name="email"]').value.trim();
+        const password = document.querySelector('#signupForm input[name="password"]').value.trim();
+        const confirmPassword = document.querySelector('#signupForm input[name="confirmPassword"]').value.trim();
+
+        if (password !== confirmPassword) {
+          alert("Passwords do not match!");
+          return;
+        }
+
+        const response = await fetch('/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+          alert(result.message);
+          window.location.href = "/";
+        } else {
+          alert("Error: " + result.error);
+        }
+      });
+
+      // Login submission
+      document.getElementById("loginForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const email = document.querySelector('#loginForm input[name="email"]').value.trim();
+        const password = document.querySelector('#loginForm input[name="password"]').value.trim();
+
+        const response = await fetch('/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+          localStorage.setItem("userId", result.userId);
+          window.location.href = "/input";
+        } else {
+          document.getElementById("loginMessage").textContent = "Login failed: " + result.error;
+          document.getElementById("loginMessage").style.color = "red";
+        }
+      });
+    </script>
+  </body>
+</html>
